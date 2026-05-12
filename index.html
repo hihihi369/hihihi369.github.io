@@ -1,0 +1,792 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ゆとり — クエスト</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600&family=Zen+Kaku+Gothic+New:wght@300;400&display=swap');
+
+- { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+–bg: #0e0c0a;
+–surface: #1a1714;
+–border: #2e2a25;
+–ink: #f0ebe3;
+–muted: #6b6358;
+–accent: #c4956a;
+–soft: #2a2520;
+–gold: #d4a96a;
+}
+
+body {
+background: var(–bg);
+color: var(–ink);
+font-family: ‘Zen Kaku Gothic New’, sans-serif;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 50px 20px 80px;
+}
+
+.header {
+text-align: center;
+margin-bottom: 40px;
+animation: fadeUp 1s ease both;
+}
+
+.title {
+font-family: ‘Shippori Mincho’, serif;
+font-size: 40px;
+letter-spacing: 0.4em;
+font-weight: 400;
+color: var(–ink);
+}
+
+.title-sub {
+font-size: 11px;
+letter-spacing: 0.3em;
+color: var(–accent);
+margin-top: 8px;
+}
+
+.divider {
+width: 40px;
+height: 1px;
+background: var(–accent);
+margin: 16px auto;
+opacity: 0.4;
+}
+
+.subtitle {
+font-size: 12px;
+letter-spacing: 0.15em;
+color: var(–muted);
+font-weight: 300;
+}
+
+/* タブ */
+.tabs {
+display: flex;
+width: 100%;
+max-width: 480px;
+margin-bottom: 24px;
+border-bottom: 1px solid var(–border);
+animation: fadeUp 1s ease 0.1s both;
+}
+
+.tab {
+flex: 1;
+padding: 12px;
+text-align: center;
+font-size: 11px;
+letter-spacing: 0.2em;
+color: var(–muted);
+cursor: pointer;
+border-bottom: 2px solid transparent;
+transition: all 0.3s;
+background: none;
+border-top: none;
+border-left: none;
+border-right: none;
+font-family: ‘Zen Kaku Gothic New’, sans-serif;
+}
+
+.tab.active {
+color: var(–ink);
+border-bottom-color: var(–accent);
+}
+
+/* カード */
+.card {
+width: 100%;
+max-width: 480px;
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 2px;
+padding: 32px 28px;
+animation: fadeUp 1s ease 0.2s both;
+}
+
+.section-label {
+font-size: 10px;
+letter-spacing: 0.3em;
+color: var(–muted);
+margin-bottom: 10px;
+}
+
+.input-field {
+width: 100%;
+border: none;
+border-bottom: 1px solid var(–border);
+background: transparent;
+font-family: ‘Zen Kaku Gothic New’, sans-serif;
+font-size: 14px;
+color: var(–ink);
+padding: 8px 0 12px;
+outline: none;
+transition: border-color 0.3s;
+}
+
+.input-field:focus { border-bottom-color: var(–accent); }
+.input-field::placeholder { color: var(–muted); font-size: 13px; }
+
+.word-input {
+width: 100%;
+border: none;
+border-bottom: 1px solid var(–border);
+background: transparent;
+font-family: ‘Shippori Mincho’, serif;
+font-size: 16px;
+color: var(–ink);
+padding: 8px 0 12px;
+resize: none;
+outline: none;
+line-height: 1.9;
+min-height: 80px;
+transition: border-color 0.3s;
+}
+
+.word-input:focus { border-bottom-color: var(–accent); }
+.word-input::placeholder { color: var(–muted); font-size: 13px; }
+
+.row {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 16px;
+margin-top: 24px;
+}
+
+.field { display: flex; flex-direction: column; gap: 8px; }
+
+.field select,
+.field input[type=“date”],
+.field input[type=“text”],
+.field input[type=“number”] {
+border: 1px solid var(–border);
+border-radius: 2px;
+background: var(–soft);
+font-family: ‘Zen Kaku Gothic New’, sans-serif;
+font-size: 13px;
+color: var(–ink);
+padding: 10px 12px;
+outline: none;
+appearance: none;
+transition: border-color 0.3s;
+width: 100%;
+}
+
+.field select:focus,
+.field input:focus { border-color: var(–accent); }
+
+.field select option { background: var(–surface); }
+
+.mt { margin-top: 20px; }
+
+.submit-btn {
+width: 100%;
+margin-top: 32px;
+padding: 15px;
+background: var(–accent);
+color: var(–bg);
+border: none;
+border-radius: 2px;
+font-family: ‘Shippori Mincho’, serif;
+font-size: 15px;
+letter-spacing: 0.3em;
+cursor: pointer;
+transition: opacity 0.3s, transform 0.1s;
+}
+
+.submit-btn:hover { opacity: 0.85; }
+.submit-btn:active { transform: scale(0.98); }
+.submit-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.note {
+text-align: center;
+font-size: 11px;
+color: var(–muted);
+margin-top: 16px;
+line-height: 2;
+letter-spacing: 0.05em;
+}
+
+/* 参加者 */
+.participant-card {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 2px;
+padding: 20px 24px;
+animation: fadeUp 0.6s ease both;
+}
+
+.participant-word {
+font-family: ‘Shippori Mincho’, serif;
+font-size: 15px;
+color: var(–ink);
+line-height: 1.8;
+margin-bottom: 10px;
+}
+
+.participant-meta {
+font-size: 11px;
+color: var(–muted);
+letter-spacing: 0.1em;
+margin-bottom: 12px;
+}
+
+.quest-btn {
+padding: 8px 16px;
+background: none;
+border: 1px solid var(–border);
+border-radius: 2px;
+font-family: ‘Zen Kaku Gothic New’, sans-serif;
+font-size: 11px;
+letter-spacing: 0.15em;
+color: var(–muted);
+cursor: pointer;
+transition: all 0.3s;
+}
+
+.quest-btn:hover { border-color: var(–accent); color: var(–accent); }
+
+/* クエスト結果 */
+.quest-result {
+width: 100%;
+max-width: 480px;
+display: none;
+flex-direction: column;
+gap: 16px;
+}
+
+.quest-result.show { display: flex; }
+
+.quest-header-card {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 2px;
+padding: 28px;
+text-align: center;
+animation: fadeUp 0.6s ease both;
+}
+
+.quest-icon { font-size: 28px; margin-bottom: 12px; }
+
+.quest-title {
+font-family: ‘Shippori Mincho’, serif;
+font-size: 18px;
+letter-spacing: 0.2em;
+margin-bottom: 8px;
+color: var(–gold);
+}
+
+.quest-intro {
+font-size: 12px;
+color: var(–muted);
+line-height: 2;
+letter-spacing: 0.05em;
+}
+
+.payment-card {
+background: var(–soft);
+border: 1px solid var(–border);
+border-radius: 2px;
+padding: 20px 24px;
+animation: fadeUp 0.6s ease 0.1s both;
+}
+
+.payment-row {
+display: flex;
+justify-content: space-between;
+align-items: center;
+font-size: 13px;
+padding: 8px 0;
+border-bottom: 1px solid var(–border);
+}
+
+.payment-row:last-child { border-bottom: none; }
+.payment-row .label { color: var(–muted); font-size: 11px; letter-spacing: 0.1em; }
+.payment-row .value { color: var(–ink); font-family: ‘Shippori Mincho’, serif; }
+.payment-row .total { color: var(–gold); font-size: 16px; }
+
+.step-card {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 2px;
+padding: 20px 24px;
+animation: fadeUp 0.6s ease both;
+position: relative;
+}
+
+.step-number {
+position: absolute;
+top: -1px;
+left: -1px;
+background: var(–accent);
+color: var(–bg);
+font-size: 10px;
+letter-spacing: 0.15em;
+padding: 4px 10px;
+border-radius: 2px 0 2px 0;
+}
+
+.step-content {
+padding-top: 16px;
+}
+
+.step-place {
+font-size: 11px;
+color: var(–accent);
+letter-spacing: 0.2em;
+margin-bottom: 8px;
+}
+
+.step-mission {
+font-family: ‘Shippori Mincho’, serif;
+font-size: 16px;
+color: var(–ink);
+line-height: 1.8;
+margin-bottom: 8px;
+}
+
+.step-hint {
+font-size: 12px;
+color: var(–muted);
+line-height: 1.8;
+letter-spacing: 0.05em;
+}
+
+.keyword-card {
+background: var(–surface);
+border: 1px solid var(–accent);
+border-radius: 2px;
+padding: 20px 24px;
+text-align: center;
+animation: fadeUp 0.6s ease both;
+}
+
+.keyword-label {
+font-size: 10px;
+letter-spacing: 0.3em;
+color: var(–muted);
+margin-bottom: 12px;
+}
+
+.keyword-word {
+font-family: ‘Shippori Mincho’, serif;
+font-size: 24px;
+color: var(–gold);
+letter-spacing: 0.3em;
+}
+
+.keyword-desc {
+font-size: 11px;
+color: var(–muted);
+margin-top: 10px;
+line-height: 1.8;
+}
+
+.pay-btn {
+width: 100%;
+padding: 16px;
+background: var(–gold);
+color: var(–bg);
+border: none;
+border-radius: 2px;
+font-family: ‘Shippori Mincho’, serif;
+font-size: 15px;
+letter-spacing: 0.3em;
+cursor: pointer;
+transition: opacity 0.3s;
+animation: fadeUp 0.6s ease both;
+}
+
+.pay-btn:hover { opacity: 0.85; }
+
+.back-btn {
+width: 100%;
+padding: 12px;
+background: none;
+border: 1px solid var(–border);
+border-radius: 2px;
+font-family: ‘Zen Kaku Gothic New’, sans-serif;
+font-size: 12px;
+letter-spacing: 0.2em;
+color: var(–muted);
+cursor: pointer;
+transition: all 0.3s;
+}
+
+.back-btn:hover { border-color: var(–muted); color: var(–ink); }
+
+.loading {
+text-align: center;
+padding: 48px;
+font-size: 12px;
+color: var(–muted);
+letter-spacing: 0.2em;
+}
+
+.loading-dots::after {
+content: ‘’;
+animation: dots 1.5s infinite;
+}
+
+@keyframes dots {
+0% { content: ‘’; }
+33% { content: ‘.’; }
+66% { content: ‘..’; }
+100% { content: ‘…’; }
+}
+
+.page { display: none; width: 100%; max-width: 480px; }
+.page.active { display: flex; flex-direction: column; gap: 16px; }
+
+.success-banner {
+background: var(–accent);
+color: var(–bg);
+padding: 12px 20px;
+border-radius: 2px;
+font-size: 12px;
+letter-spacing: 0.1em;
+text-align: center;
+animation: fadeUp 0.5s ease both;
+}
+
+.paid-banner {
+background: var(–gold);
+color: var(–bg);
+padding: 16px 20px;
+border-radius: 2px;
+font-family: ‘Shippori Mincho’, serif;
+font-size: 15px;
+letter-spacing: 0.2em;
+text-align: center;
+animation: fadeUp 0.5s ease both;
+}
+
+@keyframes fadeUp {
+from { opacity: 0; transform: translateY(16px); }
+to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+</head>
+<body>
+
+<div class="header">
+  <div class="title">ゆとり</div>
+  <div class="title-sub">QUEST</div>
+  <div class="divider"></div>
+  <div class="subtitle">AIがデートをデザインする。あなたはただ、行くだけ。</div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('register')">参加する</button>
+  <button class="tab" onclick="switchTab('list')">クエストを探す</button>
+</div>
+
+<!-- 登録 -->
+
+<div class="page active" id="page-register">
+  <div class="card">
+    <div class="section-label">ニックネーム</div>
+    <input type="text" class="input-field" id="nameInput" placeholder="例：ゆっきー、さくら">
+
+```
+<div class="mt">
+  <div class="section-label">今の気分・一言</div>
+  <textarea class="word-input" id="wordInput" placeholder="今感じていること、行きたい場所、最近気になること…"></textarea>
+</div>
+
+<div class="row">
+  <div class="field">
+    <div class="section-label">エリア</div>
+    <input type="text" id="areaInput" placeholder="例：渋谷、仙台">
+  </div>
+  <div class="field">
+    <div class="section-label">予算（円）</div>
+    <input type="number" id="budgetInput" placeholder="3000" min="1000" step="500">
+  </div>
+</div>
+
+<div class="row">
+  <div class="field">
+    <div class="section-label">日付</div>
+    <input type="date" id="dateInput">
+  </div>
+  <div class="field">
+    <div class="section-label">時間帯</div>
+    <select id="timeInput">
+      <option value="">選ぶ</option>
+      <option value="朝">朝（6〜10時）</option>
+      <option value="昼">昼（10〜14時）</option>
+      <option value="夕方">夕方（14〜18時）</option>
+      <option value="夜">夜（18〜22時）</option>
+    </select>
+  </div>
+</div>
+
+<div class="row">
+  <div class="field">
+    <div class="section-label">性別</div>
+    <select id="genderInput">
+      <option value="">選ぶ</option>
+      <option value="男性">男性</option>
+      <option value="女性">女性</option>
+      <option value="その他">その他</option>
+    </select>
+  </div>
+  <div class="field">
+    <div class="section-label">希望相手</div>
+    <select id="prefInput">
+      <option value="どちらでも">どちらでも</option>
+      <option value="男性">男性</option>
+      <option value="女性">女性</option>
+    </select>
+  </div>
+</div>
+
+<button class="submit-btn" id="submitBtn" onclick="register()">クエストに参加する</button>
+<p class="note">参加することで出会いを求めていると<br>お互いが理解した状態で引き合わされます。<br>当日の支払いはありません。事前決済のみ。</p>
+```
+
+  </div>
+</div>
+
+<!-- リスト -->
+
+<div class="page" id="page-list">
+  <div id="listContainer"></div>
+  <div class="quest-result" id="questResult"></div>
+</div>
+
+<script>
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('dateInput').value = today;
+
+  let participants = [
+    { id: 1, name: 'みなみ', word: '最近、知らない場所をひとりで歩くのが好きになった。でも誰かと話しながら歩いたらもっと良いかも。', area: '渋谷', budget: 3000, date: today, time: '昼', gender: '女性', pref: 'どちらでも' },
+    { id: 2, name: 'たける', word: '美術館に行きたいけど、ひとりだと感想を誰かと共有できないのが少し寂しい。', area: '渋谷', budget: 4000, date: today, time: '昼', gender: '男性', pref: 'どちらでも' },
+    { id: 3, name: 'はな', word: '手放したいものがある。散歩しながら考えたい。', area: '仙台', budget: 2000, date: today, time: '夕方', gender: '女性', pref: 'どちらでも' }
+  ];
+
+  let myEntry = null;
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach((t, i) => {
+      t.classList.toggle('active', (i === 0 && tab === 'register') || (i === 1 && tab === 'list'));
+    });
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(`page-${tab}`).classList.add('active');
+    if (tab === 'list') renderList();
+  }
+
+  function register() {
+    const name = document.getElementById('nameInput').value.trim();
+    const word = document.getElementById('wordInput').value.trim();
+    const area = document.getElementById('areaInput').value.trim();
+    const budget = document.getElementById('budgetInput').value;
+    const date = document.getElementById('dateInput').value;
+    const time = document.getElementById('timeInput').value;
+    const gender = document.getElementById('genderInput').value;
+    const pref = document.getElementById('prefInput').value;
+
+    if (!name || !word || !area || !budget) {
+      alert('名前・気分・エリア・予算を入力してください');
+      return;
+    }
+
+    myEntry = { id: Date.now(), name, word, area, budget: parseInt(budget), date, time, gender, pref };
+    participants.push(myEntry);
+
+    const page = document.getElementById('page-register');
+    const banner = document.createElement('div');
+    banner.className = 'success-banner';
+    banner.textContent = '参加を受け付けました。クエストを探してみてください。';
+    page.insertBefore(banner, page.firstChild);
+    document.getElementById('submitBtn').disabled = true;
+    document.getElementById('submitBtn').textContent = '参加済み';
+
+    setTimeout(() => { switchTab('list'); banner.remove(); }, 2000);
+  }
+
+  function renderList() {
+    const container = document.getElementById('listContainer');
+    document.getElementById('questResult').classList.remove('show');
+    document.getElementById('questResult').innerHTML = '';
+
+    const others = participants.filter(p => !myEntry || p.id !== myEntry.id);
+
+    if (others.length === 0) {
+      container.innerHTML = '<div style="text-align:center;padding:48px;color:var(--muted);font-size:13px;line-height:2;letter-spacing:0.1em;">まだ参加者がいません。<br>最初の一人になりませんか？</div>';
+      return;
+    }
+
+    container.innerHTML = others.map((p, i) => `
+      <div class="participant-card" style="animation-delay:${i*0.1}s">
+        <div class="participant-word">「${p.word}」</div>
+        <div class="participant-meta">${p.name}　${p.area}　${p.time || ''}　¥${p.budget.toLocaleString()}</div>
+        ${myEntry ? `<button class="quest-btn" onclick="generateQuest(${p.id})">このクエストに参加する</button>` : '<div style="font-size:11px;color:var(--muted);letter-spacing:0.1em;">参加するとクエストを組める</div>'}
+      </div>
+    `).join('');
+  }
+
+  async function generateQuest(targetId) {
+    if (!myEntry) { alert('先に参加登録してください'); switchTab('register'); return; }
+
+    const target = participants.find(p => p.id === targetId);
+    if (!target) return;
+
+    const container = document.getElementById('listContainer');
+    const questResult = document.getElementById('questResult');
+
+    container.style.display = 'none';
+    questResult.classList.add('show');
+    questResult.innerHTML = `<div class="loading"><span class="loading-dots">AIがクエストをデザインしています</span></div>`;
+
+    const budget = Math.min(myEntry.budget, target.budget);
+    const area = myEntry.area;
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          messages: [{
+            role: 'user',
+            content: `二人の言葉を読んで、${area}エリアで予算¥${budget}以内のデートクエストを作ってください。
+
+人物A「${myEntry.name}」：${myEntry.word}
+人物B「${target.name}」：${target.word}
+
+クエストは3つのステップで構成してください。各ステップには「場所」と「ミッション」があります。ミッションは「この空間で一番美しいものを選んでください」「今この瞬間の気持ちを一言で表してください」のような、答えのない曖昧で主観的なものにしてください。自然に会話が生まれるものが理想です。
+
+また二人が会う時の合言葉（5〜8文字）と、このクエストのタイトルを考えてください。
+
+以下のJSON形式のみで返してください：
+{"title":"クエストタイトル","intro":"二人へのメッセージ（2文）","keyword":"合言葉","steps":[{"place":"場所名","mission":"ミッション内容","hint":"ヒントや補足（1文）"},{"place":"場所名","mission":"ミッション内容","hint":"ヒントや補足（1文）"},{"place":"場所名","mission":"ミッション内容","hint":"ヒントや補足（1文）"}],"cost":{"transport":500,"activity":1500,"cafe":800}}`
+          }]
+        })
+      });
+
+      const data = await response.json();
+      const text = data.content.find(c => c.type === 'text')?.text || '';
+      const clean = text.replace(/```json|```/g, '').trim();
+      const quest = JSON.parse(clean);
+
+      const totalCost = Object.values(quest.cost).reduce((a, b) => a + b, 0);
+      const perPerson = Math.ceil(totalCost / 2);
+
+      questResult.innerHTML = `
+        <div class="quest-header-card">
+          <div class="quest-icon">🗺️</div>
+          <div class="quest-title">${quest.title}</div>
+          <div class="quest-intro">${quest.intro}</div>
+        </div>
+
+        <div class="payment-card">
+          <div class="section-label" style="margin-bottom:12px;">事前決済の内訳（お一人様）</div>
+          ${Object.entries(quest.cost).map(([k,v]) => `
+            <div class="payment-row">
+              <span class="label">${k === 'transport' ? '交通費' : k === 'activity' ? 'アクティビティ' : 'カフェ・食事'}</span>
+              <span class="value">¥${Math.ceil(v/2).toLocaleString()}</span>
+            </div>
+          `).join('')}
+          <div class="payment-row">
+            <span class="label">合計（お一人様）</span>
+            <span class="value total">¥${perPerson.toLocaleString()}</span>
+          </div>
+        </div>
+
+        ${quest.steps.map((step, i) => `
+          <div class="step-card" style="animation-delay:${i*0.1}s">
+            <div class="step-number">STEP ${i+1}</div>
+            <div class="step-content">
+              <div class="step-place">📍 ${step.place}</div>
+              <div class="step-mission">${step.mission}</div>
+              <div class="step-hint">${step.hint}</div>
+            </div>
+          </div>
+        `).join('')}
+
+        <div class="keyword-card">
+          <div class="keyword-label">合言葉</div>
+          <div class="keyword-word">${quest.keyword}</div>
+          <div class="keyword-desc">当日この言葉を相手に伝えてください。<br>それだけでいい。</div>
+        </div>
+
+        <button class="pay-btn" onclick="simulatePay(${perPerson})">¥${perPerson.toLocaleString()} を事前決済する</button>
+        <button class="back-btn" onclick="closeQuest()">戻る</button>
+      `;
+
+    } catch (e) {
+      questResult.innerHTML = `
+        <div class="quest-header-card">
+          <div class="quest-icon">🗺️</div>
+          <div class="quest-title">静かな午後のクエスト</div>
+          <div class="quest-intro">二人の言葉には、見えないところで響き合うものがある。答えを探すのではなく、ただ歩いてみてください。</div>
+        </div>
+        <div class="step-card">
+          <div class="step-number">STEP 1</div>
+          <div class="step-content">
+            <div class="step-place">📍 ${area}の公園かベンチ</div>
+            <div class="step-mission">この場所で一番美しいものを、相手に教えてください。</div>
+            <div class="step-hint">正解はありません。あなたが感じたものが答えです。</div>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-number">STEP 2</div>
+          <div class="step-content">
+            <div class="step-place">📍 近くのカフェ</div>
+            <div class="step-mission">今この瞬間の気持ちを、一言で表してください。</div>
+            <div class="step-hint">難しければ、天気に例えてもいい。</div>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-number">STEP 3</div>
+          <div class="step-content">
+            <div class="step-place">📍 あなたが選んだ場所</div>
+            <div class="step-mission">今日一番印象に残ったことを、相手に話してください。</div>
+            <div class="step-hint">それだけでいい。</div>
+          </div>
+        </div>
+        <div class="keyword-card">
+          <div class="keyword-label">合言葉</div>
+          <div class="keyword-word">ゆとり</div>
+          <div class="keyword-desc">当日この言葉を相手に伝えてください。</div>
+        </div>
+        <button class="pay-btn" onclick="simulatePay(2000)">¥2,000 を事前決済する</button>
+        <button class="back-btn" onclick="closeQuest()">戻る</button>
+      `;
+    }
+  }
+
+  function simulatePay(amount) {
+    const result = document.getElementById('questResult');
+    const banner = document.createElement('div');
+    banner.className = 'paid-banner';
+    banner.innerHTML = `¥${amount.toLocaleString()} の決済が完了しました<br><span style="font-size:12px;letter-spacing:0.1em;">当日は合言葉だけ持って行けばいい。</span>`;
+    result.insertBefore(banner, result.firstChild);
+    result.querySelector('.pay-btn').remove();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function closeQuest() {
+    const container = document.getElementById('listContainer');
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.gap = '16px';
+    document.getElementById('questResult').classList.remove('show');
+    document.getElementById('questResult').innerHTML = '';
+  }
+</script>
+
+</body>
+</html>
