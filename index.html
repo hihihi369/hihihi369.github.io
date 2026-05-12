@@ -117,6 +117,11 @@
   .empty-state { text-align: center; padding: 48px 24px; color: var(--muted); font-size: 13px; line-height: 2; letter-spacing: 0.1em; }
 
   @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+  .day-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .day-chip { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border: 1px solid var(--border); border-radius: 2px; font-size: 12px; letter-spacing: 0.1em; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+  .day-chip:has(input:checked) { border-color: var(--accent); color: var(--accent); }
+  .day-chip input { display: none; }
 </style>
 </head>
 <body>
@@ -151,11 +156,21 @@
         <input type="number" id="budgetInput" placeholder="3000" min="1000" step="500">
       </div>
     </div>
-    <div class="row">
-      <div class="field">
-        <div class="section-label">日付</div>
-        <input type="date" id="dateInput">
+    <div class="mt">
+      <div class="section-label">会える日（複数選択可）</div>
+      <div class="day-grid">
+        <label class="day-chip"><input type="checkbox" value="平日全般"> 平日全般</label>
+        <label class="day-chip"><input type="checkbox" value="土日祝"> 土日祝</label>
+        <label class="day-chip"><input type="checkbox" value="月"> 月</label>
+        <label class="day-chip"><input type="checkbox" value="火"> 火</label>
+        <label class="day-chip"><input type="checkbox" value="水"> 水</label>
+        <label class="day-chip"><input type="checkbox" value="木"> 木</label>
+        <label class="day-chip"><input type="checkbox" value="金"> 金</label>
+        <label class="day-chip"><input type="checkbox" value="土"> 土</label>
+        <label class="day-chip"><input type="checkbox" value="日"> 日</label>
       </div>
+    </div>
+    <div class="mt">
       <div class="field">
         <div class="section-label">時間帯</div>
         <select id="timeInput">
@@ -232,7 +247,7 @@
     const word = document.getElementById('wordInput').value.trim();
     const area = document.getElementById('areaInput').value.trim();
     const budget = document.getElementById('budgetInput').value;
-    const date = document.getElementById('dateInput').value;
+    const date = Array.from(document.querySelectorAll('.day-chip input:checked')).map(el => el.value).join('・');
     const time = document.getElementById('timeInput').value;
     const gender = document.getElementById('genderInput').value;
     const pref = document.getElementById('prefInput').value;
